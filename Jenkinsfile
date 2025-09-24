@@ -32,16 +32,16 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 // remove old deployment if exists
-                bat "rmdir /S /Q \"%TOMCAT_PATH%\""
+                bat 'if exist "%TOMCAT_PATH%" rmdir /S /Q "%TOMCAT_PATH%"'
 
                 // copy new build folder
-                bat "xcopy /E /I /Y build \"%TOMCAT_PATH%\""
+                bat 'xcopy /E /I /Y build "%TOMCAT_PATH%"'
             }
         }
 
+        // Uncomment if you want to restart Tomcat service
         // stage('Restart Tomcat') {
         //     steps {
-        //         // Restart Tomcat Windows service (adjust service name if different)
         //         bat 'net stop Tomcat9'
         //         bat 'net start Tomcat9'
         //     }
