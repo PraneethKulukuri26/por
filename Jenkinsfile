@@ -25,7 +25,7 @@ pipeline {
 
         stage('Build React app') {
             steps {
-                bat 'set CI=false && npm run build'
+                bat 'set CI=false\nnpm run build'
             }
         }
 
