@@ -34,7 +34,18 @@ pipeline {
                 // remove old deployment if exists
                 bat 'if exist "%TOMCAT_PATH%" rmdir /S /Q "%TOMCAT_PATH%"'
 
-                // copy new build folder
+                // create WEB-INF folder and web.xml inside build
+                bat '''
+                mkdir build\\WEB-INF
+                echo ^<?xml version="1.0" encoding="UTF-8"?^> > build\\WEB-INF\\web.xml
+                echo ^<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1"^> >> build\\WEB-INF\\web.xml
+                echo ^<welcome-file-list^> >> build\\WEB-INF\\web.xml
+                echo ^<welcome-file^>index.html^</welcome-file^> >> build\\WEB-INF\\web.xml
+                echo ^</welcome-file-list^> >> build\\WEB-INF\\web.xml
+                echo ^</web-app^> >> build\\WEB-INF\\web.xml
+                '''
+
+                // copy build folder to Tomcat
                 bat 'xcopy /E /I /Y build "%TOMCAT_PATH%"'
             }
         }
