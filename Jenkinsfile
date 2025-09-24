@@ -6,10 +6,7 @@ pipeline {
     }
 
     environment {
-        TOMCAT_USER = "admin1234"
-        TOMCAT_PASS = "admin"
-        TOMCAT_URL  = "http://localhost:8080/manager/text"
-        APP_NAME    = "portfolio"
+        TOMCAT_PATH = "C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps\\portfolio"
     }
 
     stages {
@@ -32,22 +29,23 @@ pipeline {
             }
         }
 
-        stage('Package WAR') {
-            steps {
-                // package React build folder as a WAR file
-                bat 'jar -cvf portfolio.war -C build .'
-            }
-        }
-
         stage('Deploy to Tomcat') {
             steps {
-                // undeploy old app
-                bat 'curl -u %TOMCAT_USER%:%TOMCAT_PASS% "%TOMCAT_URL%/undeploy?path=/%APP_NAME%" || exit 0'
+                // remove old deployment if exists
+                bat "rmdir /S /Q \"%TOMCAT_PATH%\""
 
-                // deploy new WAR
-                bat 'curl -u %TOMCAT_USER%:%TOMCAT_PASS% -T portfolio.war "%TOMCAT_URL%/deploy?path=/%APP_NAME%"'
+                // copy new build folder
+                bat "xcopy /E /I /Y build \"%TOMCAT_PATH%\""
             }
         }
+
+        // stage('Restart Tomcat') {
+        //     steps {
+        //         // Restart Tomcat Windows service (adjust service name if different)
+        //         bat 'net stop Tomcat9'
+        //         bat 'net start Tomcat9'
+        //     }
+        // }
     }
 
     post {
